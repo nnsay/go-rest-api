@@ -32,7 +32,8 @@ func Hola(w http.ResponseWriter, r *http.Request) {
 }
 
 func Json(w http.ResponseWriter, r *http.Request) {
-	response := Info{Gender: Man, Age: 33, Auth: &Auth{Name: "Jimmy"}}
+	g := Man
+	response := Info{Gender: &g, Age: 33, Auth: &Auth{Name: "Jimmy"}}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -79,13 +80,13 @@ type Auth struct {
 type Gender int
 
 const (
-	Man Gender = 1
+	Man Gender = iota
 	Female
 )
 
 // As the docs say, "any nil pointer." -- make the struct a pointer. Pointers have obvious "empty" values: nil
 type Info struct {
-	Gender  Gender   `json:"gender,omitempty"`
+	Gender  *Gender  `json:"gender,omitempty"` // zero value weill be omited, but point can resolve the problem and the only nil pointer will be omitted.
 	Age     int      `json:"age,omitempty"`
 	Address *Address `json:"address,omitempty"`
 	Auth    *Auth    `json:"auth,omitempty"`
