@@ -13,6 +13,7 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/test", Test)
+	router.HandleFunc("/json", Json)
 	router.HandleFunc("/hola/{name}", Hola)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
@@ -27,6 +28,11 @@ func Hola(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	name := vars["name"]
 	response := HipChatResponse{Color: "yellow", Message: "Hola " + name, Notify: "false", MessageFormat: "text"}
+	json.NewEncoder(w).Encode(response)
+}
+
+func Json(w http.ResponseWriter, r *http.Request) {
+	response := Info{Gender: Man, Age: 33, Auth: &Auth{Name: "Jimmy"}}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -58,4 +64,29 @@ type HipChatrequest struct {
 		} `json:"room"`
 	} `json:"item"`
 	WebhookID int `json:"webhook_id"`
+}
+
+type Address struct {
+	Province string `json:"province,omitempty"`
+	City     string `json:"city,omitempty"`
+}
+
+type Auth struct {
+	Name  string `json:"name,omitempty"`
+	Email string `json:"email,omitempty"`
+}
+
+type Gender int
+
+const (
+	Man Gender = 1
+	Female
+)
+
+// As the docs say, "any nil pointer." -- make the struct a pointer. Pointers have obvious "empty" values: nil
+type Info struct {
+	Gender  Gender   `json:"gender,omitempty"`
+	Age     int      `json:"age,omitempty"`
+	Address *Address `json:"address,omitempty"`
+	Auth    *Auth    `json:"auth,omitempty"`
 }
