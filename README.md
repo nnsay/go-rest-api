@@ -37,3 +37,13 @@ curl http://localhost:8080/hola/world
 
 {"color":"yellow","message":"Hola world","notify":"false","message_format":"text"}
 ```
+
+## 镜像
+
+```bash
+podman login docker.io
+
+podman build . -t rest:latest
+podman tag localhost/rest docker.io/nnsay/rest:latest
+podman push docker.io/nnsay/rest:latest
+```
