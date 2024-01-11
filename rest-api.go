@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,7 +19,16 @@ func main() {
 	router.HandleFunc("/json", Json)
 	router.HandleFunc("/hola/{name}", Hola)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	port := 8080
+	portStr, has := os.LookupEnv("APP_PORT")
+	if has {
+		envPort, err := strconv.Atoi(portStr)
+		if err == nil {
+			port = envPort
+		}
+	}
+	log.Printf("serving at %d\n", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), router))
 }
 
 func Test(w http.ResponseWriter, r *http.Request) {
